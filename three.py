@@ -1,23 +1,30 @@
 test_input = [987654321111111, 811111111111119, 234234234234278, 818181911112111]
 puzzle_input = open('three.txt').read().strip().split('\n')
 
-
-def calculate_joltage(bank):
-    bank_list = [int(x) for x in str(bank)]
-    first_battery_position = str(bank).find(str(max(bank_list)))
-    if first_battery_position == len(str(bank)) - 1:
-        second_battery_position = str(bank).find(str(max(bank_list[:-1])))
-        return int(str(bank_list[second_battery_position]) + str( bank_list[first_battery_position]))
-    else:
-        second_battery_position = str(bank).find(str(max(bank_list[first_battery_position + 1:])))
-        return int(str(bank_list[first_battery_position]) + str( bank_list[second_battery_position]))
-
-def calculate_total_joltage(banks):
+def calculate_total_joltage(banks: list, amount_of_batteries: int):
     total_joltage = 0
+
     for bank in banks:
-        joltage = calculate_joltage(int(bank))
-        total_joltage += joltage
-        print(f'Bank {bank} has joltage {joltage}')
+        digits = [int(d) for d in str(bank)]
+        last_pos = 0
+        result_digits = []
+
+        for _ in range(amount_of_batteries):
+            if last_pos >= len(digits):
+                break
+            remaining = amount_of_batteries - len(result_digits)
+            search_space = digits[last_pos:len(digits) - remaining + 1]
+
+            max_digit = max(search_space)
+            max_index = search_space.index(max_digit) + last_pos
+
+            result_digits.append(str(max_digit))
+            last_pos = max_index + 1
+
+        total_joltage += int("".join(result_digits))
+
     return total_joltage
 
-print(calculate_total_joltage(puzzle_input))
+
+
+print(calculate_total_joltage(puzzle_input, 12))
